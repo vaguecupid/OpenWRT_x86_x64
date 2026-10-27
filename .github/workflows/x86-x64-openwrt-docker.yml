@@ -108,7 +108,19 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-             
+
+    - name: Ensure host upx exists for mihomo
+      run: |
+        cd openwrt
+        mkdir -p staging_dir/host/bin
+        if command -v upx >/dev/null 2>&1; then
+          ln -sf "$(command -v upx)" staging_dir/host/bin/upx
+          ls -l staging_dir/host/bin/upx
+        else
+          echo "upx is not installed in runner"
+          exit 1
+        fi
+              
     - name: Compile the firmware
       id: compile
       run: |
