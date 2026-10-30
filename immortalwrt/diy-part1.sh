@@ -34,3 +34,7 @@ popd
 rm -rf feeds/packages/net/v2ray-geodata
 git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
+
+# 修复 Argon 在 ImmortalWrt 24.10 下的 wget 依赖
+sed -i 's/wget-any/wget-ssl/g' \
+  package/community/luci-theme-argon/Makefile
