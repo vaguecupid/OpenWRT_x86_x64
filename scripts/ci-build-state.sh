@@ -12,6 +12,7 @@ case "$mode" in
     fi
     mkdir checkpoint
     realpath openwrt > openwrt/.ci-build-root
+    (. /etc/os-release; printf '%s %s\n' "$ID" "$VERSION_ID") > openwrt/.ci-build-os
     git -C openwrt rev-parse HEAD > openwrt/.ci-source-revision
     # PAX tar retains symlinks, executability, and sub-second mtimes.
     # Preserve the whole source, feeds, downloads, staging, build dirs and stamps.
@@ -26,6 +27,11 @@ case "$mode" in
     test ! -e openwrt
     (cd checkpoint && sha256sum -c SHA256SUMS)
     cat checkpoint/state.tar.zst.part-* | zstd -d -c | tar -xpf -
+    current_os=$(. /etc/os-release; printf '%s %s' "$ID" "$VERSION_ID")
+    test "$(cat openwrt/.ci-build-os)" = "$current_os" || {
+      echo '::error::ubuntu-latest changed OS version between jobs; start a fresh workflow run.'
+      exit 1
+    }
     # Build files contain absolute paths; do not silently relocate them.
     test "$(cat openwrt/.ci-build-root)" = "$(realpath openwrt)" || {
       echo '::error::Runner workspace path differs from the original build path.'
