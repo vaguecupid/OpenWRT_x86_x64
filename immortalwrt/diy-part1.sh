@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+export GIT_TERMINAL_PROMPT=0
 
 # Merge_package
 function merge_package(){
@@ -15,10 +17,10 @@ rm -rf feeds/luci/themes/luci-theme-argon
 rm -rf feeds/luci/applications/luci-app-argon-config
 
 # Clone community packages to package/community
-mkdir package/community
+mkdir -p package/community
 pushd package/community
 git clone --depth=1 https://github.com/fw876/helloworld
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall2
 git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki
 git clone --depth=1 https://github.com/DHDAXCW/dhdaxcw-app
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon
@@ -32,3 +34,11 @@ popd
 rm -rf feeds/packages/net/v2ray-geodata
 git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
+
+# Fix the upstream archive URL; retain ndisc6 version and checksum.
+sed -i \
+  's|^PKG_SOURCE_URL:=.*|PKG_SOURCE_URL:=https://www.remlab.net/files/ndisc6/archive|' \
+  package/community/5G-Modem-Support/ndisc/Makefile
+
+# Compatibility with ImmortalWrt 24.10 wget package names.
+sed -i 's/wget-any/wget-ssl/g' package/community/luci-theme-argon/Makefile
