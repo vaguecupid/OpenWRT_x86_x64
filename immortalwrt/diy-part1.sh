@@ -42,3 +42,7 @@ sed -i \
 
 # Compatibility with ImmortalWrt 24.10 wget package names.
 sed -i 's/wget-any/wget-ssl/g' package/community/luci-theme-argon/Makefile
+
+# Resolve duplicate Quectel package names and the symmetric Mihomo Kconfig cycle.
+DIY_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+python3 "$DIY_SCRIPT_DIR/../scripts/fix-package-dependencies.py"
