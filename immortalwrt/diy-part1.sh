@@ -42,3 +42,7 @@ sed -i \
 
 # ImmortalWrt 24.10 provides wget-ssl, not wget-any.
 sed -i 's/wget-any/wget-ssl/g' package/community/luci-theme-argon/Makefile
+
+# Apply package dependency repairs before generating Kconfig.
+DIY_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+python3 "$DIY_SCRIPT_DIR/../scripts/fix-package-dependencies.py"
